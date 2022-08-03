@@ -1,6 +1,7 @@
 package dev.ranieri.app;
 
 import dev.ranieri.daos.BookDaoLocal;
+import dev.ranieri.daos.BookDaoPostgres;
 import dev.ranieri.handlers.CreateBookHandler;
 import dev.ranieri.handlers.DeleteBookHandler;
 import dev.ranieri.handlers.GetBookByIdHandler;
@@ -12,7 +13,7 @@ import io.javalin.Javalin;
 public class App {
 
     // you can use this single instance throughout your application
-    public static BookService bookService = new BookServiceImpl(new BookDaoLocal());
+    public static BookService bookService = new BookServiceImpl(new BookDaoPostgres());
 
     public static void main(String[] args) {
         Javalin app = Javalin.create();

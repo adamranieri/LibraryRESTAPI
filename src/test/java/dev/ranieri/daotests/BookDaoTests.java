@@ -1,16 +1,39 @@
 package dev.ranieri.daotests;
 
 import dev.ranieri.daos.BookDAO;
-import dev.ranieri.daos.BookDaoLocal;
 import dev.ranieri.daos.BookDaoPostgres;
 import dev.ranieri.entities.Book;
+import dev.ranieri.utils.ConnectionUtil;
 import org.junit.jupiter.api.*;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 // @ means Annotation
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class BookDaoTests {
 
     static BookDAO bookDAO = new BookDaoPostgres();
+
+    @BeforeAll // this method will execute before any tests ordered or unordered
+    static void setup(){
+        try(Connection conn = ConnectionUtil.createConnection()){
+            String sql = "create table book(\n" +
+                    "\tid serial primary key,\n" +
+                    "\ttitle varchar(100) not null,\n" +
+                    "\tauthor varchar(100) not null,\n" +
+                    "\treturn_date int default 0\n" +
+                    ");";
+
+            Statement statement = conn.createStatement();
+            statement.execute(sql);
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+    }
 
     @Test
     @Order(1)
@@ -46,6 +69,19 @@ public class BookDaoTests {
     void delete_book_by_id_test(){
         boolean result = bookDAO.deleteBookById(1);
         Assertions.assertTrue(result);
+
+    }
+
+    @AfterAll // runs after the last test finishes
+    static void teardown(){
+
+        try(Connection connection = ConnectionUtil.createConnection()){
+            String sql = "drop table book";
+            Statement statement = connection.createStatement();
+            statement.execute(sql);
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
 
     }
 

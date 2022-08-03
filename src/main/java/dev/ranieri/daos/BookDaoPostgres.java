@@ -37,7 +37,26 @@ public class BookDaoPostgres implements BookDAO{
 
     @Override
     public Book getBookById(int id) {
-        return null;
+        try(Connection connection = ConnectionUtil.createConnection()){
+            String sql = "select * from book where id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1,id);
+
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+
+            Book book = new Book();
+            book.setId(rs.getInt("id"));
+            book.setTitle(rs.getString("title"));
+            book.setAuthor(rs.getString("author"));
+            book.setReturnDate(rs.getLong("return_date"));
+
+            return book;
+
+        }catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
@@ -47,7 +66,12 @@ public class BookDaoPostgres implements BookDAO{
 
     @Override
     public Book updateBook(Book book) {
-        return null;
+        try(Connection conn = ConnectionUtil.createConnection()){
+            String sql = "";
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
