@@ -3,6 +3,10 @@ package dev.ranieri.services;
 import dev.ranieri.daos.BookDAO;
 import dev.ranieri.entities.Book;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class BookServiceImpl implements BookService{
     // in order to to implement these methods I need to use a book dao that has crud operations
     // Dependency Injection. Building an instance of the service with the dependency in the constructor
@@ -52,5 +56,27 @@ public class BookServiceImpl implements BookService{
         }
 
         return this.bookDAO.updateBook(book);
+    }
+
+    @Override
+    public List<Book> getAllBooks() {
+        return this.bookDAO.getAllBooks();
+    }
+
+    @Override
+    public List<Book> getBooksByTitle(String title) {
+
+        List<Book> allBooks = this.getAllBooks();
+//        List<Book> sortedBookList = new ArrayList();
+//
+//        for(Book book: allBooks){
+//            if(book.getTitle().equals(title)){
+//                sortedBookList.add(book);
+//            }
+//        }
+
+        List<Book> sortedBookList = allBooks.stream().filter(book -> book.getTitle().equals(title)).collect(Collectors.toList());
+
+        return sortedBookList;
     }
 }
