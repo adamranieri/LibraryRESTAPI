@@ -2,6 +2,7 @@ package dev.ranieri.daotests;
 
 import dev.ranieri.daos.BookDAO;
 import dev.ranieri.daos.BookDaoLocal;
+import dev.ranieri.daos.BookDaoPostgres;
 import dev.ranieri.entities.Book;
 import org.junit.jupiter.api.*;
 
@@ -9,7 +10,7 @@ import org.junit.jupiter.api.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class BookDaoTests {
 
-    static BookDAO bookDAO = new BookDaoLocal();
+    static BookDAO bookDAO = new BookDaoPostgres();
 
     @Test
     @Order(1)
@@ -19,7 +20,7 @@ public class BookDaoTests {
         Book book = new Book(0,"Frankenstein", "Mary Shelley", 0);
         Book savedBook = bookDAO.createBook(book);
         Assertions.assertNotEquals(0,savedBook.getId()) ;
-
+        System.out.println(book);
     }
 
     @Test
