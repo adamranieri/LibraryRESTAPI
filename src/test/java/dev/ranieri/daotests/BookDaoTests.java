@@ -9,6 +9,7 @@ import org.junit.jupiter.api.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 // @ means Annotation
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -72,17 +73,34 @@ public class BookDaoTests {
 
     }
 
-    @AfterAll // runs after the last test finishes
-    static void teardown(){
+    @Test
+    @Order(5) // Integration test. Because it requires multiple methods to work correctly
+    void get_all_books_test(){
+        Book book1 = new Book(0,"To Kill a mockingbird", "Harper Lee", 100);
+        Book book2 = new Book(0, "In Cold Blood", "Truman Capote", 0);
+        Book book3 = new Book(0, "Fellowship of the ring", "J.R.R Tolkien", 0);
 
-        try(Connection connection = ConnectionUtil.createConnection()){
-            String sql = "drop table book";
-            Statement statement = connection.createStatement();
-            statement.execute(sql);
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
+        bookDAO.createBook(book1);
+        bookDAO.createBook(book2);
+        bookDAO.createBook(book3);
+
+        List<Book> bookList = bookDAO.getAllBooks();
+        Assertions.assertEquals(3,bookList.size());
+
 
     }
+
+//    @AfterAll // runs after the last test finishes
+//    static void teardown(){
+//
+//        try(Connection connection = ConnectionUtil.createConnection()){
+//            String sql = "drop table book";
+//            Statement statement = connection.createStatement();
+//            statement.execute(sql);
+//        }catch (SQLException e){
+//            e.printStackTrace();
+//        }
+//
+//    }
 
 }

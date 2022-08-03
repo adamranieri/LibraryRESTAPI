@@ -4,6 +4,7 @@ import dev.ranieri.entities.Book;
 import dev.ranieri.utils.ConnectionUtil;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BookDaoPostgres implements BookDAO{
@@ -61,21 +62,63 @@ public class BookDaoPostgres implements BookDAO{
 
     @Override
     public List<Book> getAllBooks() {
-        return null;
+        try(Connection connection = ConnectionUtil.createConnection()){
+            String sql = "select * from book";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            List<Book> bookList = new ArrayList();
+            while(rs.next()){
+                Book book = new Book();
+                book.setId(rs.getInt("id"));
+                book.setTitle(rs.getString("title"));
+                book.setAuthor(rs.getString("author"));
+                book.setReturnDate(rs.getLong("return_date"));
+                bookList.add(book);
+            }
+            return bookList;
+
+        }catch (SQLException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public Book updateBook(Book book) {
         try(Connection conn = ConnectionUtil.createConnection()){
-            String sql = "";
+            //update book set title = 'The Stranger Things', author = 'Albert Kamus', return_date = 1 where id = 1;
+            String sql = "update book set title = ?, author = ?, return_date = ? where id = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setString(1, book.getTitle());
+            preparedStatement.setString(2, book.getAuthor());
+            preparedStatement.setLong(3,book.getReturnDate());
+            preparedStatement.setInt(4,book.getId());
+
+            preparedStatement.executeUpdate();
+            return book;
 
         }catch (SQLException e){
             e.printStackTrace();
+            return null;
         }
     }
 
     @Override
     public boolean deleteBookById(int id) {
-        return false;
+        try(Connection conn = ConnectionUtil.createConnection()){
+            String sql = "delete from book where id = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1,id);
+            ps.execute();
+            return true;
+
+        }catch (SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+
     }
 }
