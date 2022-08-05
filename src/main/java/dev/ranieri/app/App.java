@@ -18,7 +18,9 @@ public class App {
     public static BookService bookService = new BookServiceImpl(new BookDaoPostgres());
 
     public static void main(String[] args) {
-        Javalin app = Javalin.create();
+        Javalin app = Javalin.create(config->{
+            config.enableDevLogging();
+        });
 
 
         CreateBookHandler createBookHandler = new CreateBookHandler();
