@@ -1,12 +1,16 @@
 package dev.ranieri.app;
 
 import com.google.gson.Gson;
-import dev.ranieri.daos.BookDaoLocal;
 import dev.ranieri.daos.BookDaoPostgres;
+import dev.ranieri.daos.EmployeeDaoPostgres;
+import dev.ranieri.dtos.LoginCredentials;
 import dev.ranieri.entities.Book;
+import dev.ranieri.entities.Employee;
 import dev.ranieri.handlers.*;
 import dev.ranieri.services.BookService;
 import dev.ranieri.services.BookServiceImpl;
+import dev.ranieri.services.LoginService;
+import dev.ranieri.services.LoginServiceImpl;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 
@@ -16,6 +20,7 @@ public class App {
 
     // you can use this single instance throughout your application
     public static BookService bookService = new BookServiceImpl(new BookDaoPostgres());
+    public static LoginService loginService = new LoginServiceImpl(new EmployeeDaoPostgres());
 
     public static void main(String[] args) {
         Javalin app = Javalin.create(config->{
@@ -67,6 +72,18 @@ public class App {
 
         // queryParams DO NOT require a new route to be declared
         app.get("/books", getAllBooks);
+
+        // /login is NOT a RESTful endpoint
+        app.post("/login", ctx ->{
+            String body = ctx.body();
+            Gson gson = new Gson();
+            LoginCredentials credentials = gson.fromJson(body, LoginCredentials.class);
+
+            Employee employee = loginService.validateUser(credentials.getUsername(), credentials.getPassword());
+            String employeeJSON = gson.toJson(employee);
+            ctx.result(employeeJSON);
+        });
+
 
         app.start();
     }
